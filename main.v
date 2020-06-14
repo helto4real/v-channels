@@ -8,7 +8,7 @@ fn main() {
 	// q := channel.new_queue<TestStruct>()
 	mut ev := sync2.new_event()
 
-	go do(mut &ev)
+	// go do(mut &ev)
 
 	println("waiting for event")
 
