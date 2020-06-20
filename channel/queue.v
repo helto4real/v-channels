@@ -17,8 +17,11 @@ struct Queue{
 }
 
 // push writes one item to queue
-fn (mut q Queue) push(item voidptr) ? {
-	if q.full() {return error("queue is full")}
+// V-bug prohibits just returning optional
+fn (mut q Queue) push(item voidptr) ?bool {
+	if q.full() {
+		return error("queue is full")
+	}
 
 	q.q[q.write_index] = item
 
@@ -29,6 +32,7 @@ fn (mut q Queue) push(item voidptr) ? {
 	{
 		q.write_index = 0
 	}
+	return true
 }
 
 // pop reads on item from queue

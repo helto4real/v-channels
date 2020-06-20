@@ -1,23 +1,43 @@
-import sync2
+module main
+
+import channel
 import time
 
 struct TestStruct {
-	some_int int
+	id int
 }
+
+
+// Basic perf test to compare with golang channels
 fn main() {
-	// q := channel.new_queue<TestStruct>()
-	mut ev := sync2.new_event()
 
-	// go do(mut &ev)
+	mut ch := channel.new_buffered_channel(1000) or {panic(err)}
 
-	println("waiting for event")
+	go read_channel(mut ch)
 
-	ev.wait() or {panic(err)}
+	sw := time.new_stopwatch({})
 
-	println("wait is over")
+	c := 1000000
+
+	for i := 0; i<c; i++ {
+		// println('write $i')
+		mut item := &TestStruct{id: i}
+		ch.write(item) or {panic(err)}
+	}
+
+	println('$c took ${int(sw.elapsed().milliseconds())} ms. ')
+
+
+	time.sleep_ms(2000)
 }
 
-fn do(mut e &sync2.Event) {
-	time.sleep_ms(1000)
-	e.set()
+fn read_channel(mut ch channel.Channel) {
+	for {
+		ch.read() or {panic(err)}
+		// item := &TestStruct(i)
+		// println('read $item.id')
+		// time.sleep_ms(10)
+	}
 }
+
+
